@@ -72,11 +72,15 @@ susfs_apply() {
 	cp -v "${kp}/include/linux/"*.h   "${KERNEL_DIR}/include/linux/" 2>/dev/null || true
 
 	# 2. Patch the kernel itself.
-	local kernel_patch="${kp}/50_add_susfs_in_${branch}.patch"
-	[ -f "$kernel_patch" ] || {
-		# Fall back to whatever 50_* patch the branch actually ships.
-		kernel_patch=$(find "$kp" -maxdepth 1 -name '50_add_susfs_in_*.patch' | head -n1)
-	}
+	local kernel_patch="${REPO_ROOT}/patches/50_add_susfs_in_kernel-5.4.patch"
+	if [ ! -f "$kernel_patch" ]; then
+		kernel_patch="${kp}/50_add_susfs_in_${branch}.patch"
+		[ -f "$kernel_patch" ] || {
+			kernel_patch=$(find "$kp" -maxdepth 1 -name '50_add_susfs_in_*.patch' | head -n1)
+		}
+	else
+		info "Using pre-verified Xiaomi SuSFS patch from patches/50_add_susfs_in_kernel-5.4.patch"
+	fi
 	[ -n "$kernel_patch" ] && [ -f "$kernel_patch" ] \
 		|| die "no 50_add_susfs_in_*.patch found in ${kp}"
 
