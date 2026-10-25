@@ -26,6 +26,10 @@ if [ -f "${KERNEL_DIR}/.git/shallow" ]; then
 	debug "kernel tree is shallow; that is fine for building"
 fi
 
+info "Locking kernel version to stock 5.4.289-qgki-g4e27a72000be for HyperOS module compatibility"
+sed -i 's/^SUBLEVEL = .*/SUBLEVEL = 289/' "${KERNEL_DIR}/Makefile"
+sed -i 's/^EXTRAVERSION = .*/EXTRAVERSION = -qgki-g4e27a72000be/' "${KERNEL_DIR}/Makefile"
+
 KVER=$(kernel_version "$KERNEL_DIR") \
 	|| die "could not read VERSION/PATCHLEVEL from ${KERNEL_DIR}/Makefile -- is this a kernel tree?"
 export_env KERNEL_VERSION "$KVER"
