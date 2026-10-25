@@ -117,6 +117,9 @@ make_args() {
 build_kernel() {
 	group "Building kernel"
 	export PATH="${CLANG_PATH:-}:${PATH}"
+	info "Stripping -Werror from kernel Makefiles"
+	find "${KERNEL_DIR}" \( -name "Makefile" -o -name "Kbuild" \) -exec sed -i 's/-Werror\b//g' {} + || true
+	export KCFLAGS="${KCFLAGS:-} -Wno-error -Wno-unused-but-set-variable -Wno-unused-variable -Wno-error=strict-prototypes"
 	export KBUILD_BUILD_HOST=${KBUILD_BUILD_HOST:-Github-Action}
 	export KBUILD_BUILD_USER=${KBUILD_BUILD_USER:-kernelsu-action}
 
