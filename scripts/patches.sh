@@ -116,7 +116,8 @@ open(sys.argv[1], 'w').write(p)
 	#    ship SUSFS support. SukiSU-Ultra's 'builtin' branch, for instance,
 	#    declares CONFIG_KSU_SUSFS itself; applying the patch on top conflicts.
 	local ksu_dir="${KERNEL_DIR}/${KSU_DIR:-KernelSU}"
-	local ksu_patch="${kp}/KernelSU/10_enable_susfs_for_ksu.patch"
+	local ksu_patch="${REPO_ROOT}/patches/10_enable_susfs_for_ksu.patch"
+	[ -f "$ksu_patch" ] || ksu_patch="${kp}/KernelSU/10_enable_susfs_for_ksu.patch" 
 
 	if susfs_is_bundled; then
 		info "${KSU_NAME:-the selected variant} already bundles SUSFS at ref '${KSU_REF_RESOLVED:-}'; skipping 10_enable_susfs_for_ksu.patch"
