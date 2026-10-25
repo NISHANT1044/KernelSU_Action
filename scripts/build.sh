@@ -122,6 +122,10 @@ build_kernel() {
 		sed -i 's/ -Werror//g' "${KERNEL_DIR}/drivers/usb/typec/tcpc/Makefile"
 		printf '\nsubdir-ccflags-y += -Wno-unused-but-set-variable -Wno-unused-variable\n' >> "${KERNEL_DIR}/drivers/usb/typec/tcpc/Makefile"
 	fi
+	if [ -f "${KERNEL_DIR}/drivers/kernelsu/kernel_includes.h" ]; then
+		info "Fixing static_call.h inclusion for kernel 5.4 in kernel_includes.h"
+		sed -i 's@#include <linux/static_call.h>@#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)\n#include <linux/static_call.h>\n#endif@' "${KERNEL_DIR}/drivers/kernelsu/kernel_includes.h"
+	fi
 	if [ -f "${KERNEL_DIR}/techpack/stub/stub.c" ]; then
 		info "Injecting missing FOD/HBM display stubs into techpack/stub/stub.c"
 		cat << 'EOF' > "${KERNEL_DIR}/techpack/stub/stub.c"
