@@ -80,6 +80,12 @@ susfs_apply() {
 	[ -n "$kernel_patch" ] && [ -f "$kernel_patch" ] \
 		|| die "no 50_add_susfs_in_*.patch found in ${kp}"
 
+		# Remove bootconfig hunk if tree lacks fs/proc/bootconfig.c (e.g. Xiaomi 5.4)
+	if [ ! -f "${KERNEL_DIR}/fs/proc/bootconfig.c" ]; then
+		info "kernel lacks fs/proc/bootconfig.c; removing bootconfig hunk from ${kernel_patch##*/}"
+		python3 -c "import re, sys; p = open(sys.argv[1]).read(); open(sys.argv[1], 'w').write(re.sub(r'diff --git a/fs/proc/bootconfig\\.c b/fs/proc/bootconfig\\.c.*?(?=diff --git|\\Z)', '', p, flags=re.DOTALL))" "$kernel_patch"
+	fi
+
 	( cd "$KERNEL_DIR" && apply_patch "$kernel_patch" 1 ) \
 		|| die "the SUSFS kernel patch did not apply cleanly.
        This usually means SUSFS_BRANCH does not match your kernel. Detected
