@@ -36,6 +36,30 @@ if [ -f "${KERNEL_DIR}/techpack/display/msm/sde/sde_irq.c" ]; then
 	info "Fixing generic_handle_irq_safe -> generic_handle_irq for Linux 5.4 in sde_irq.c"
 	sed -i 's/generic_handle_irq_safe/generic_handle_irq/g' "${KERNEL_DIR}/techpack/display/msm/sde/sde_irq.c"
 fi
+if [ -f "${KERNEL_DIR}/techpack/display/msm/dsi/dsi_display.c" ]; then
+	info "Fixing of_graph_is_present for Linux 5.4 in dsi_display.c"
+	python3 -c '
+import sys
+p = sys.argv[1]
+with open(p, "r") as f:
+    c = f.read()
+patch = """#include <linux/of_graph.h>
+static inline bool of_graph_is_present(const struct device_node *node) {
+\tstruct device_node *ports, *port;
+\tports = of_get_child_by_name(node, "ports");
+\tif (ports) node = ports;
+\tport = of_get_child_by_name(node, "port");
+\tof_node_put(ports);
+\tof_node_put(port);
+\treturn !!port;
+}
+"""
+c = c.replace("#include <linux/err.h>", "#include <linux/err.h>\n" + patch)
+with open(p, "w") as f:
+    f.write(c)
+' "${KERNEL_DIR}/techpack/display/msm/dsi/dsi_display.c"
+fi
+
 ok "AMOLED display techpack injected into ${KERNEL_DIR}/techpack/display"
 endgroup
 
