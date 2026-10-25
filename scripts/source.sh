@@ -32,6 +32,10 @@ git clone -q --depth=1 -b meme https://github.com/Fucking-Projekt/android_kernel
 rm -rf "${KERNEL_DIR}/techpack/display"
 cp -r "${WORKSPACE}/display_src/techpack/display" "${KERNEL_DIR}/techpack/"
 rm -rf "${WORKSPACE}/display_src"
+if [ -f "${KERNEL_DIR}/techpack/display/msm/sde/sde_irq.c" ]; then
+	info "Fixing generic_handle_irq_safe -> generic_handle_irq for Linux 5.4 in sde_irq.c"
+	sed -i 's/generic_handle_irq_safe/generic_handle_irq/g' "${KERNEL_DIR}/techpack/display/msm/sde/sde_irq.c"
+fi
 ok "AMOLED display techpack injected into ${KERNEL_DIR}/techpack/display"
 endgroup
 
