@@ -26,6 +26,16 @@ if [ -f "${KERNEL_DIR}/.git/shallow" ]; then
 	debug "kernel tree is shallow; that is fine for building"
 fi
 
+group "Injecting AMOLED display techpack"
+info "Fetching techpack/display from Fucking-Projekt meme branch..."
+git clone -q --depth=1 -b meme https://github.com/Fucking-Projekt/android_kernel_xiaomi_stone "${WORKSPACE}/display_src"
+rm -rf "${KERNEL_DIR}/techpack/display"
+cp -r "${WORKSPACE}/display_src/techpack/display" "${KERNEL_DIR}/techpack/"
+rm -rf "${WORKSPACE}/display_src"
+ok "AMOLED display techpack injected into ${KERNEL_DIR}/techpack/display"
+endgroup
+
+
 info "Locking kernel version to stock 5.4.289-qgki-g4e27a72000be for HyperOS module compatibility"
 sed -i 's/^SUBLEVEL = .*/SUBLEVEL = 289/' "${KERNEL_DIR}/Makefile"
 sed -i 's/^EXTRAVERSION = .*/EXTRAVERSION = -qgki-g4e27a72000be/' "${KERNEL_DIR}/Makefile"
