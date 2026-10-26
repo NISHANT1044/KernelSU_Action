@@ -7,6 +7,7 @@ set -euo pipefail
 
 WORKSPACE=${WORKSPACE:?WORKSPACE must be set}
 KERNEL_DIR="${WORKSPACE}/android-kernel"
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
 group "Cloning kernel source"
 info "${KERNEL_SOURCE} @ ${KERNEL_SOURCE_BRANCH}"
